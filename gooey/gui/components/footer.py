@@ -43,16 +43,24 @@ class Footer(wx.Panel):
         self.Bind(wx.EVT_LEFT_DOWN, notifyMouseEvent)
 
 
-    def updateTimeRemaining(self,*args,**kwargs):
+    def updateStatusText(self, *args, **kwargs):
+        text = kwargs.get('status')
+        if text is None:
+            self.status_text.SetLabel('')
+        else:
+            self.status_text.SetLabel(f"{text}")
+
+
+    def updateTimeRemaining(self, *args, **kwargs):
         estimate_time_remaining = kwargs.get('estimatedRemaining')
         elapsed_time_value = kwargs.get('elapsed_time')
         if elapsed_time_value is None:
             return
         elif estimate_time_remaining is not None:
-            self.time_remaining_text.SetLabel(f"{elapsed_time_value}<{estimate_time_remaining}")
+            self.status_text.SetLabel(f"{elapsed_time_value}<{estimate_time_remaining}")
             return
         else:
-            self.time_remaining_text.SetLabel(f"{elapsed_time_value}")
+            self.status_text.SetLabel(f"{elapsed_time_value}")
 
 
     def updateProgressBar(self, *args, **kwargs):
@@ -64,9 +72,7 @@ class Footer(wx.Panel):
         '''
         value = kwargs.get('progress')
         pb = self.progress_bar
-        if value is None:
-            return
-        if value < 0:
+        if not value:
             pb.Pulse()
         else:
             value = min(int(value), pb.GetRange())
@@ -101,7 +107,8 @@ class Footer(wx.Panel):
 
         self.progress_bar = wx.Gauge(self, range=100)
 
-        self.time_remaining_text = wx.StaticText(self)
+        self.status_text = wx.StaticText(self)
+        self.status_text.SetFont(wx.Font(10, wx.FONTFAMILY_TELETYPE, wx.NORMAL, wx.NORMAL, faceName="Monospace"))
 
         self.buttons = [self.cancel_button, self.start_button,
                         self.stop_button, self.close_button,
@@ -122,7 +129,7 @@ class Footer(wx.Panel):
         h_sizer.Add(self.progress_bar, 1,
                     wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 20)
         
-        h_sizer.Add(self.time_remaining_text,0,wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 20)
+        h_sizer.Add(self.status_text, 0, wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 20)
 
         h_sizer.AddStretchSpacer(1)
         h_sizer.Add(self.cancel_button, 0,wx.RIGHT, 20)

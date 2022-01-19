@@ -23,7 +23,7 @@ class TestFooterTimeRemaining(unittest.TestCase):
                     footer = gooeyApp.footer
 
                     self.assertEqual(
-                        footer.time_remaining_text.Shown,
+                        footer.status_text.Shown,
                         testdata.get('show_time_remaining',False)
                     )
 
@@ -38,7 +38,7 @@ class TestFooterTimeRemaining(unittest.TestCase):
 
                     if not testdata.get('show_time_remaining') and testdata:
                         self.assertEqual(
-                            footer.time_remaining_text.Shown,
+                            footer.status_text.Shown,
                             testdata.get('hide_time_remaining_on_complete',True)
                         )
                     else:

@@ -47,6 +47,7 @@ defaults = {
     'progress_regex': None,  # TODO: add this to the docs
     'progress_expr': None,  # TODO: add this to the docs
     'hide_progress_msg': False,  # TODO: add this to the docs
+    'status_regex': None,  # TODO: add this to the docs
     'disable_progress_bar_animation': False,
     'disable_stop_button': False,
     'group_by_type': True,
@@ -80,11 +81,12 @@ def Gooey(f=None,
           progress_regex=None,  # TODO: add this to the docs
           progress_expr=None,  # TODO: add this to the docs
           hide_progress_msg=False,  # TODO: add this to the docs
+          status_regex=None,
           disable_progress_bar_animation=False,
           disable_stop_button=False,
           group_by_type=True,
           header_height=80,
-          navigation='SIDEBAR', # TODO: add this to the docs
+          navigation='SIDEBAR',  # TODO: add this to the docs
           tabbed_groups=False,
           use_cmd_args=False,
           **kwargs):

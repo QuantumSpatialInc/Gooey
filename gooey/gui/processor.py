@@ -16,11 +16,13 @@ from gooey.util.functional import unit, bind
 
 class ProcessController(object):
     def __init__(self, progress_regex, progress_expr, hide_progress_msg,
-                 encoding, shell=True, shutdown_signal=signal.SIGTERM):
+                 status_regex, encoding, shell=True,
+                 shutdown_signal=signal.SIGTERM):
         self._process = None
         self.progress_regex = progress_regex
         self.progress_expr = progress_expr
         self.hide_progress_msg = hide_progress_msg
+        self.status_regex = status_regex
         self.encoding = encoding
         self.wasForcefullyStopped = False
         self.shell_execution = shell
@@ -93,12 +95,17 @@ class ProcessController(object):
             line = process.stdout.readline()
             if not line:
                 break
-            _progress = self._extract_progress(line)
 
+            _progress = self._extract_progress(line)
             pub.send_message(events.PROGRESS_UPDATE, progress=_progress)
-            if _progress is None or self.hide_progress_msg is False:
+
+            _status = self._extract_status(line)
+            pub.send_message(events.STATUS_UPDATE, status=_status)
+
+            if (not _progress and not _status) or not self.hide_progress_msg:
                 pub.send_message(events.CONSOLE_UPDATE,
                                  msg=line.decode(self.encoding))
+
         pub.send_message(events.EXECUTION_COMPLETE)
 
     def _extract_progress(self, text):
@@ -111,6 +118,13 @@ class ProcessController(object):
         regex = unit(self.progress_regex)
         match = bind(regex, find)
         result = bind(match, self._calculate_progress)
+        return result
+
+    def _extract_status(self, text):
+        find = partial(re.search, string=text.strip().decode(self.encoding))
+        regex = unit(self.status_regex)
+        match = bind(regex, find)
+        result = bind(match, lambda x: x.group(1) if x else None)
         return result
 
     def _calculate_progress(self, match):

@@ -52,6 +52,7 @@ class GooeyApplication(wx.Frame):
             self.buildSpec.get('progress_regex'),
             self.buildSpec.get('progress_expr'),
             self.buildSpec.get('hide_progress_msg'),
+            self.buildSpec.get('status_regex'),
             self.buildSpec.get('encoding'),
             self.buildSpec.get('requires_shell'),
             self.buildSpec.get('shutdown_signal', signal.SIGTERM)
@@ -66,6 +67,7 @@ class GooeyApplication(wx.Frame):
         pub.subscribe(events.CONSOLE_UPDATE, self.console.logOutput)
         pub.subscribe(events.EXECUTION_COMPLETE, self.onComplete)
         pub.subscribe(events.PROGRESS_UPDATE, self.footer.updateProgressBar)
+        pub.subscribe(events.STATUS_UPDATE, self.footer.updateStatusText)
         pub.subscribe(events.TIME_UPDATE, self.footer.updateTimeRemaining)
         # Top level wx close event
         self.Bind(wx.EVT_CLOSE, self.onClose)
@@ -252,7 +254,7 @@ class GooeyApplication(wx.Frame):
         self.header.setSubtitle(self.buildSpec['program_description'])
         self.footer.showButtons('cancel_button', 'start_button')
         self.footer.progress_bar.Show(False)
-        self.footer.time_remaining_text.Show(False)
+        self.footer.status_text.Show(False)
 
 
     def showConsole(self):
@@ -264,10 +266,13 @@ class GooeyApplication(wx.Frame):
         self.footer.showButtons('stop_button')
         if not self.buildSpec.get('disable_progress_bar_animation', False):
             self.footer.progress_bar.Show(True)
-        self.footer.time_remaining_text.Show(False)
+        self.footer.status_text.Show(False)
         if self.buildSpec.get('timing_options')['show_time_remaining']:
             self.timer.start()
-            self.footer.time_remaining_text.Show(True)
+            self.footer.status_text.Show(True)
+        if self.buildSpec['status_regex']:
+            self.footer.status_text.Show(True)
+            self.footer.progress_bar.Pulse()
         if not self.buildSpec['progress_regex']:
             self.footer.progress_bar.Pulse()
 
@@ -282,9 +287,9 @@ class GooeyApplication(wx.Frame):
         self.footer.progress_bar.Show(False)
         if self.buildSpec.get('timing_options')['show_time_remaining']:
             self.timer.stop()
-        self.footer.time_remaining_text.Show(True)
+        self.footer.status_text.Show(True)
         if self.buildSpec.get('timing_options')['hide_time_remaining_on_complete']:
-            self.footer.time_remaining_text.Show(False)
+            self.footer.status_text.Show(False)
 
 
 
