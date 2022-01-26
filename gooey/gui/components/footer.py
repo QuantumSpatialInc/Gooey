@@ -117,6 +117,8 @@ class Footer(wx.Panel):
         if self.buildSpec['disable_stop_button']:
             self.stop_button.Enable(False)
 
+        self.SetDoubleBuffered(True)
+
 
     def _do_layout(self):
         self.SetBackgroundColour(self.buildSpec['footer_bg_color'])
