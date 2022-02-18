@@ -105,7 +105,7 @@ class FilterableDropdown(Dropdown):
         self.listbox.OnGetItem = self.OnGetItem
         # model is created here because the design of these widget
         # classes is broken.
-        self.model = FilterableDropdownModel(self._meta['choices'], self._options, listeners=[self.interpretState])
+        self.model = FilterableDropdownModel(self._options.get('choices', []) or self._meta['choices'], self._options, listeners=[self.interpretState])
         # overriding this to false removes it from tab behavior.
         # and keeps the tabbing at the top-level widget level
         self.listbox.AcceptsFocusFromKeyboard = lambda *args, **kwargs: False
