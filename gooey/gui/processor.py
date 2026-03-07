@@ -80,7 +80,6 @@ class ProcessController(object):
                 command,
                 stdout=subprocess.PIPE, stdin=subprocess.PIPE,
                 stderr = subprocess.STDOUT, shell = self.shell_execution, env=env,
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
             )
 
         t = Thread(target=self._forward_stdout, args=(self._process,))
